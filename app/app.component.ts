@@ -2,13 +2,16 @@ import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-
+import {Store} from '@ngrx/store';
 
 @Component({
     selector: 'app',
     template: `
         <h1>{{title}}</h1>
-        <button (click)="increment()">{{counter}}</button>
+        <div>
+            <input #name />
+            <button (click)="addUser(name.value)">Add</button>
+        </div>
         <ul>
             <li *ngFor="let user of users">{{user.name}}</li>
         </ul>
@@ -18,21 +21,29 @@ export class AppComponent implements OnInit {
     title = 'Hello World !!!';
     counter = 0;
     users;
+    name;
 
-    constructor(public http: Http, @Inject(PLATFORM_ID) private platformId: Object) {
+    constructor(
+        public http: Http, 
+        @Inject(PLATFORM_ID) private platformId: Object,
+        private store: Store<any>
+    ) {
     }
 
     ngOnInit() {
-
-        let url = 'http://localhost:3300/users';
-        this.http.get(url)
-            .map(response => response.json())
-            .subscribe(response => {
-                this.users = response.users;
-            });
+        this.store.select('users').subscribe((users) => {
+            console.log('>>>>>>>QQQ');
+            console.log(JSON.stringify(users));
+            this.users = users;
+        });
     }
 
-    increment() {
-        this.counter += 2;
+    addUser(name) {
+        this.store.dispatch({
+            type: 'ADD',
+            payload: {
+                name
+            }
+        });
     }
 }

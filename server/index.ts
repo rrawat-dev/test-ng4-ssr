@@ -7,6 +7,8 @@ import { platformServer, renderModule, renderModuleFactory } from '@angular/plat
 import { AppServerModule } from '../app/app.server.module';
 import { Users } from './users';
 import { PlatformState } from '@angular/platform-server';
+import { provideStore } from '@ngrx/store';
+import { AppState } from '../app/reducer';
 
 class Server {
 	public app: express.Application;
@@ -28,7 +30,12 @@ class Server {
 	}
 
 	public defaultRoute(req, res) {
-		renderModule(AppServerModule, {document: this.getLayoutHTML().toString('utf8')}).then(
+		renderModule(AppServerModule, {
+			document: this.getLayoutHTML(),
+			extraProviders: [
+				provideStore(AppState, Users)
+			]
+		}).then(
 			(html) => {
 				res.end(html);
 			}
@@ -36,7 +43,20 @@ class Server {
 	}
 
 	public getLayoutHTML() {
-		return fs.readFileSync(path.join(__dirname, 'layout/index.html'));
+		return `
+			<!DOCTYPE html>
+			<html>
+				<head>
+					<title>Demo</title>
+				</head>
+				<body>
+					<app></app>
+					<script>var data = ${JSON.stringify(Users)}</script>
+					<script src="/dist/vendor.bundle.js"></script>
+					<script src="/dist/main.bundle.js"></script>
+				</body>
+			</html>
+		`;
 	}
 
 	public renderList(req, res) {

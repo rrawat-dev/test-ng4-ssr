@@ -26,6 +26,8 @@
     "@angular/platform-browser": "^4.2.6",
     "@angular/platform-browser-dynamic": "^4.2.6",
     "@angular/platform-server": "^4.2.6",
+    "@ngrx/core": "^1.2.0",
+    "@ngrx/store": "^2.2.3",
     "core.js": "^0.4.2",
     "preboot": "^5.0.0-rc.13",
     "reflect-metadata": "^0.1.10",
